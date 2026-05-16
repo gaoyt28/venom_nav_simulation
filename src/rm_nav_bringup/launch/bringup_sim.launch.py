@@ -23,6 +23,7 @@ def generate_launch_description():
     use_sim_time = LaunchConfiguration('use_sim_time')
     use_lio_rviz = LaunchConfiguration('lio_rviz')
     use_nav_rviz = LaunchConfiguration('nav_rviz')
+    dynamic_obstacles = LaunchConfiguration('dynamic_obstacles')
 
     ################################ robot_description parameters start ###############################
     launch_params = yaml.safe_load(open(os.path.join(
@@ -87,6 +88,12 @@ def generate_launch_description():
         default_value='RMUL',
         description='Select world (map file, pcd file, world file share the same name prefix as the this parameter)')
 
+    declare_dynamic_obstacles_cmd = DeclareLaunchArgument(
+        'dynamic_obstacles',
+        default_value='false',
+        description='Use the dynamic-obstacle simulation world when supported.'
+    )
+
     declare_mode_cmd = DeclareLaunchArgument(
         'mode',
         default_value='',
@@ -110,6 +117,7 @@ def generate_launch_description():
         launch_arguments={
             'use_sim_time': use_sim_time,
             'world': world,
+            'dynamic_obstacles': dynamic_obstacles,
             'robot_description': robot_description,
             'rviz': 'False'}.items()
     )
@@ -318,6 +326,7 @@ def generate_launch_description():
     ld.add_action(declare_use_lio_rviz_cmd)
     ld.add_action(declare_nav_rviz_cmd)
     ld.add_action(declare_world_cmd)
+    ld.add_action(declare_dynamic_obstacles_cmd)
     ld.add_action(declare_mode_cmd)
     ld.add_action(declare_localization_cmd)
     ld.add_action(declare_LIO_cmd)

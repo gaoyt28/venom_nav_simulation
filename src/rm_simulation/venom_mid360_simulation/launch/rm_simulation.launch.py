@@ -18,7 +18,7 @@ class WorldType:
     RMUC = 'RMUC'
     RMUL = 'RMUL'
 
-def get_world_config(world_type):
+def get_world_config(world_type, use_dynamic_obstacles=False):
     world_configs = {
         WorldType.RMUC: {
             'x': '6.35',
@@ -32,8 +32,11 @@ def get_world_config(world_type):
             'y': '3.35',
             'z': '1.16',
             'yaw': '0.0',
-            'world_path': 'RMUL2024_world/RMUL2024_world.world'
-            # 'world_path': 'RMUL2024_world/RMUL2024_world_dynamic_obstacles.world'
+            'world_path': (
+                'RMUL2024_world/RMUL2024_world_dynamic_obstacles.world'
+                if use_dynamic_obstacles
+                else 'RMUL2024_world/RMUL2024_world.world'
+            )
         }
     }
     return world_configs.get(world_type, None)
@@ -51,6 +54,7 @@ def generate_launch_description():
     use_sim_time = LaunchConfiguration('use_sim_time')
     use_rviz = LaunchConfiguration('rviz', default='false')
     robot_description = LaunchConfiguration('robot_description')
+    dynamic_obstacles = LaunchConfiguration('dynamic_obstacles')
 
     # Set Gazebo plugin path
     append_enviroment = AppendEnvironmentVariable(
@@ -76,6 +80,12 @@ def generate_launch_description():
         'world',
         default_value=WorldType.RMUC,
         description='Choose <RMUC> or <RMUL>'
+    )
+
+    declare_dynamic_obstacles_cmd = DeclareLaunchArgument(
+        'dynamic_obstacles',
+        default_value='false',
+        description='Use the dynamic-obstacle RMUL world when world is RMUL.'
     )
 
     declare_rviz_config_file_cmd = DeclareLaunchArgument(
@@ -125,8 +135,8 @@ def generate_launch_description():
         arguments=['-d' + os.path.join(bringup_dir, 'rviz', 'rviz2.rviz')]
     )
 
-    def create_gazebo_launch_group(world_type):
-        world_config = get_world_config(world_type)
+    def create_gazebo_launch_group(world_type, use_dynamic=False):
+        world_config = get_world_config(world_type, use_dynamic_obstacles=use_dynamic)
         if world_config is None:
             return None
 
@@ -153,7 +163,14 @@ def generate_launch_description():
         )
 
     bringup_RMUC_cmd_group = create_gazebo_launch_group(WorldType.RMUC)
-    bringup_RMUL_cmd_group = create_gazebo_launch_group(WorldType.RMUL)
+    bringup_RMUL_static_cmd_group = GroupAction(
+        condition=LaunchConfigurationEquals('dynamic_obstacles', 'false'),
+        actions=[create_gazebo_launch_group(WorldType.RMUL, use_dynamic=False)],
+    )
+    bringup_RMUL_dynamic_cmd_group = GroupAction(
+        condition=LaunchConfigurationEquals('dynamic_obstacles', 'true'),
+        actions=[create_gazebo_launch_group(WorldType.RMUL, use_dynamic=True)],
+    )
 
     # Create the launch description and populate
     ld = LaunchDescription()
@@ -163,12 +180,14 @@ def generate_launch_description():
 
     ld.add_action(declare_use_sim_time_cmd)
     ld.add_action(declare_world_cmd)
+    ld.add_action(declare_dynamic_obstacles_cmd)
     ld.add_action(declare_rviz_config_file_cmd)
     ld.add_action(declare_robot_description_cmd)
     ld.add_action(gazebo_client_launch)
     ld.add_action(start_joint_state_publisher_cmd)
     ld.add_action(start_robot_state_publisher_cmd)
-    ld.add_action(bringup_RMUL_cmd_group) # type: ignore
+    ld.add_action(bringup_RMUL_static_cmd_group) # type: ignore
+    ld.add_action(bringup_RMUL_dynamic_cmd_group) # type: ignore
     ld.add_action(bringup_RMUC_cmd_group) # type: ignore
 
     # Uncomment this line if you want to start RViz

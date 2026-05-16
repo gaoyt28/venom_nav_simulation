@@ -24,6 +24,7 @@ def generate_launch_description():
     use_lio_rviz = LaunchConfiguration('lio_rviz')
     use_nav_rviz = LaunchConfiguration('nav_rviz')
     dynamic_obstacles = LaunchConfiguration('dynamic_obstacles')
+    fake_spin_speed = LaunchConfiguration('fake_spin_speed')
 
     ################################ robot_description parameters start ###############################
     launch_params = yaml.safe_load(open(os.path.join(
@@ -108,6 +109,11 @@ def generate_launch_description():
         'lio',
         default_value='fast_lio',
         description='Choose lio alogrithm: fastlio or pointlio')
+
+    declare_fake_spin_speed_cmd = DeclareLaunchArgument(
+        'fake_spin_speed',
+        default_value='0.0',
+        description='Angular speed forwarded by fake_vel_transform when Nav2 requests rotation')
 
     # Specify the actions
     start_rm_simulation = IncludeLaunchDescription(
@@ -295,7 +301,7 @@ def generate_launch_description():
         output='screen',
         parameters=[{
             'use_sim_time': use_sim_time,
-            'spin_speed': 5.0 # rad/s
+            'spin_speed': fake_spin_speed
         }]
     )
 
@@ -330,6 +336,7 @@ def generate_launch_description():
     ld.add_action(declare_mode_cmd)
     ld.add_action(declare_localization_cmd)
     ld.add_action(declare_LIO_cmd)
+    ld.add_action(declare_fake_spin_speed_cmd)
 
     ld.add_action(start_rm_simulation)
     ld.add_action(bringup_imu_complementary_filter_node)

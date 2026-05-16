@@ -158,8 +158,8 @@ controller_server:
       #*******************************************************************************
       # Robot/Omni 此部分参数仅适用于全方位移动机器人
       #*******************************************************************************
-      max_vel_y: 3.0
-      acc_lim_y: 4.0
+      max_vel_y: 0.0
+      acc_lim_y: 0.0
 
       #*******************************************************************************
       # GoalTolerance 目标容差
@@ -201,13 +201,13 @@ controller_server:
       # 权重参数
       obstacle_cost_exponent: 4.0
       weight_max_vel_x: 2.0                   #满足最大允许平移速度的权重
-      weight_max_vel_y: 2.0                   #满足最大允许横移速度的权重 (仅用于全向移动机器人)
+      weight_max_vel_y: 0.0                   #满足最大允许横移速度的权重 (仅用于全向移动机器人)
       weight_max_vel_theta: 1.0               #满足最大允许角速度的权重
       weight_acc_lim_x: 1.0                   #满足最大允许平移加速度的权重
-      weight_acc_lim_y: 1.0                   #满足最大允许横移加速度的权重 (仅用于全向移动机器人)
+      weight_acc_lim_y: 0.0                   #满足最大允许横移加速度的权重 (仅用于全向移动机器人)
       weight_acc_lim_theta: 1.0               #满足最大允许角加速度的权重
-      weight_kinematics_nh: 0.0               #满足非全向运动学约束的权重
-      weight_kinematics_forward_drive: 0.0    #强制机器人仅选择向前运动方向的权重 (仅用于差分驱动机器人)
+      weight_kinematics_nh: 1000.0            #满足非全向运动学约束的权重
+      weight_kinematics_forward_drive: 1.0    #强制机器人仅选择向前运动方向的权重 (仅用于差分驱动机器人)
       weight_kinematics_turning_radius: 0.1   #强制最小转弯半径（小车型机器人）的优化权重
       weight_optimaltime: 0.1                 #优化轨迹并尽量缩短运动时间的权重，确保在规定的时间内到达目标
       weight_shortest_path: 0.0               #倾向于选择更短的路径，路径可能更加弯曲或不平坦
@@ -401,11 +401,11 @@ velocity_smoother:
     smoothing_frequency: 20.0
     scale_velocities: False
     feedback: "OPEN_LOOP"
-    max_velocity: [2.0, 2.0, 3.0]
-    min_velocity: [-2.0, -2.0, -3.0]
+    max_velocity: [2.0, 0.0, 3.0]
+    min_velocity: [-2.0, 0.0, -3.0]
     deadband_velocity: [0.0, 0.0, 0.0]
     velocity_timeout: 1.0
-    max_accel: [4.0, 4.0, 6.0]
-    max_decel: [-4.0, -4.0, -6.0]
+    max_accel: [4.0, 0.0, 6.0]
+    max_decel: [-4.0, 0.0, -6.0]
     odom_topic: "Odometry"
     odom_duration: 0.1

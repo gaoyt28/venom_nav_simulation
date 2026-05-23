@@ -110,7 +110,7 @@ def generate_launch_description():
                 'overtake_sim_road_network.yaml',
             ),
         ),
-        DeclareLaunchArgument('route_name', default_value='main_lane_patrol'),
+        DeclareLaunchArgument('route_name', default_value='main_lane_overtake_left'),
         DeclareLaunchArgument('mission_start_delay_sec', default_value='8.0'),
         DeclareLaunchArgument(
             'overtake_params_file',

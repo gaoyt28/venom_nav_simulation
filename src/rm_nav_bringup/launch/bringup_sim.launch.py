@@ -112,7 +112,7 @@ def generate_launch_description():
 
     declare_fake_spin_speed_cmd = DeclareLaunchArgument(
         'fake_spin_speed',
-        default_value='0.0',
+        default_value='5.0',
         description='Angular speed forwarded by fake_vel_transform when Nav2 requests rotation')
 
     # Specify the actions
@@ -301,7 +301,7 @@ def generate_launch_description():
         output='screen',
         parameters=[{
             'use_sim_time': use_sim_time,
-            'spin_speed': fake_spin_speed
+            'spin_speed': 0.0
         }]
     )
 
